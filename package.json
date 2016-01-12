@@ -27,8 +27,10 @@
   },
   "homepage": "https://github.com/wmf23/Female-Political-Representation-in-PA#readme",
   "dependencies": {
+    "chart.js": "^1.0.2",
     "jquery": "^2.2.0",
     "react": "^0.14.3",
+    "react-chartjs": "^0.6.0",
     "react-dom": "^0.14.3",
     "react-pivot": "^1.13.0"
   },
