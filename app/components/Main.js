@@ -1,13 +1,76 @@
 var React = require("react");
 var ReactDOM = require("react-dom");
+var ResultTable = require("./ResultTable");
+var $ = require("jquery");
 
 var Main = React.createClass({
+
+  getInitialState: function() {
+    return {
+      lookup: {},
+      electionResults: []
+    };
+  },
+
+  componentWillMount: function() {
+    $.ajax({
+      url: "election-result-key.csv",
+      dataType: "text",
+      success: function(data) {
+        data.split('\n').splice(1).forEach(function(row) {
+          let items = row.split(",");
+          let section = this.state.lookup[items[2]];
+
+          if (section === undefined) {
+            this.state.lookup[items[2]] = {};
+            section = this.state.lookup[items[2]];
+          }
+
+          section[items[0]] = items[1];
+        }.bind(this));
+
+        $.ajax({
+          url: "election-result.csv",
+          dataType: "text",
+          success: function(data) {
+
+            let headers = undefined;
+            data.split('\n').forEach(function(row, index) {
+              if (index === 0) {
+                headers = row.split(",");
+                return;
+              }
+
+              let electionResult = {};
+              let items = row.split(",");
+              items.forEach(function(item, itemIndex) {
+                let headerName = headers[itemIndex];
+
+                electionResult[headerName] = this.state.lookup[headerName] === undefined ? item : this.state.lookup[headerName][item];
+
+              }.bind(this));
+
+              this.state.electionResults.push(electionResult);
+            }.bind(this));
+
+            this.setState(this.state);
+            console.log(this.state);
+          }.bind(this)
+        });
+
+      }.bind(this)
+    });
+  },
+
   render: function() {
     return (
       <div>
         <nav className="navbar navbar-inverse navbar-fixed-top">
-          <div className="container">
+          <div className="container no-side-padding">
             <div className="navbar-header">
+              <a className="navbar-brand" href="#">
+              <span className="glyphicon glyphicon-globe" aria-hidden="true"></span>
+              </a>
               <a className="navbar-brand" href="#">Pennsylvania Political</a>
             </div>
             <div id="navbar" className="navbar-collapse collapse">
@@ -23,71 +86,37 @@ var Main = React.createClass({
 
         <div className="container top-buffer">
           <div className="row">
-            <div className="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-              <h1 className="page-header">Dashboard</h1>
+            <h1 className="page-header">Quick Facts</h1>
+          </div>
 
-              <div className="row placeholders">
-                <div className="col-xs-6 col-sm-3 placeholder">
-                  <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" className="img-responsive" alt="Generic placeholder thumbnail" />
-                  <h4>Label</h4>
-                  <span className="text-muted">Something else</span>
-                </div>
-                <div className="col-xs-6 col-sm-3 placeholder">
-                  <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" className="img-responsive" alt="Generic placeholder thumbnail" />
-                  <h4>Label</h4>
-                  <span className="text-muted">Something else</span>
-                </div>
-                <div className="col-xs-6 col-sm-3 placeholder">
-                  <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" className="img-responsive" alt="Generic placeholder thumbnail" />
-                  <h4>Label</h4>
-                  <span className="text-muted">Something else</span>
-                </div>
-                <div className="col-xs-6 col-sm-3 placeholder">
-                  <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" className="img-responsive" alt="Generic placeholder thumbnail" />
-                  <h4>Label</h4>
-                  <span className="text-muted">Something else</span>
-                </div>
-              </div>
-
-              <h2 className="sub-header">Section title</h2>
-              <div className="table-responsive">
-                <table className="table table-striped">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Header</th>
-                      <th>Header</th>
-                      <th>Header</th>
-                      <th>Header</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>1,001</td>
-                      <td>Lorem</td>
-                      <td>ipsum</td>
-                      <td>dolor</td>
-                      <td>sit</td>
-                    </tr>
-                    <tr>
-                      <td>1,002</td>
-                      <td>amet</td>
-                      <td>consectetur</td>
-                      <td>adipiscing</td>
-                      <td>elit</td>
-                    </tr>
-                    <tr>
-                      <td>1,003</td>
-                      <td>Integer</td>
-                      <td>nec</td>
-                      <td>odio</td>
-                      <td>Praesent</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+          <div className="row">
+            <div className="col-xs-6 col-sm-3 placeholder">
+              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" className="img-responsive" alt="Generic placeholder thumbnail" />
+              <h4>Label</h4>
+              <span className="text-muted">Something else</span>
+            </div>
+            <div className="col-xs-6 col-sm-3 placeholder">
+              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" className="img-responsive" alt="Generic placeholder thumbnail" />
+              <h4>Label</h4>
+              <span className="text-muted">Something else</span>
+            </div>
+            <div className="col-xs-6 col-sm-3 placeholder">
+              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" className="img-responsive" alt="Generic placeholder thumbnail" />
+              <h4>Label</h4>
+              <span className="text-muted">Something else</span>
+            </div>
+            <div className="col-xs-6 col-sm-3 placeholder">
+              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" className="img-responsive" alt="Generic placeholder thumbnail" />
+              <h4>Label</h4>
+              <span className="text-muted">Something else</span>
             </div>
           </div>
+
+          <div className="row">
+            <h1 className="page-header">Election Results</h1>
+            <ResultTable electionResults={this.state.electionResults} />
+          </div>
+
         </div>
       </div>
     );

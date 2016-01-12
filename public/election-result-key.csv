@@ -1,0 +1,54 @@
+key,value,fieldname
+0,Rep,Party
+1,Dem,Party
+2,CST,Party
+3,Ind,Party
+4,R/D,Party
+5,Lib,Party
+6,Grn,Party
+7,VFC,Party
+8,NOP,Party
+9,UNI,Party
+10,DBP,Party
+11,SOS,Party
+12,D/G,Party
+13,HFR,Party
+14,REF,Party
+15,GFL,Party
+16,ACT,Party
+17,51I,Party
+18,SOC,Party
+19,GRO,Party
+20,NON,Party
+21,SPU,Party
+22,BFR,Party
+23,NAI,Party
+24,SWP,Party
+25,YLP,Party
+26,VFV,Party
+27,CON,Party
+28, F89,Party
+29,145,Party
+30, WBP,Party
+31,VFI,Party
+0,Senator,Office
+1,Rep,Office
+2,Attorney General,Office
+3,Auditor General,Office
+4,State Treasurer,Office
+0,Man,Gender
+1,Woman,Gender
+0,Yes,Winner
+1,No,Winner
+0,Primary,Election
+1,GE,Election
+0,2000,Year
+1,2002,Year
+2,2004,Year
+3,2006,Year
+4,2008,Year
+5,2010,Year
+6,2012,Year
+7,2014,Year
+0,Incumbent,Incumbent
+1,Challenger,Incumbent
