@@ -5,9 +5,16 @@ var ResultTable = React.createClass({
   render: function() {
 
     let dimensions = [
-      { value: 'Gender', title: 'Gender' },
+      { value: 'District', title: 'District' },
+      { value: 'First Name', title: 'First Name' },
+      { value: 'Last Name', title: 'Last Name' },
+      { value: 'Unique Candidate ID', title: 'Unique Candidate ID' },
       { value: 'Office', title: 'Office' },
       { value: 'Party', title: 'Party' },
+      { value: 'Gender', title: 'Gender' },
+      { value: 'Election', title: 'Election' },
+      { value: 'Year', title: 'Year' },
+      { value: 'Incumbent', title: 'Incumbent' }
     ];
 
     let reduce = function(row, memo) {
@@ -30,7 +37,7 @@ var ResultTable = React.createClass({
         dimensions={dimensions}
         reduce={reduce}
         calculations={calculations}
-        activeDimensions={['Gender']}
+        activeDimensions={['Year', 'Gender']}
       />
     );
   }

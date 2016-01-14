@@ -99,17 +99,34 @@
 	  },
 
 	  processElectionResultData: function processElectionResultData(data) {
+
+	    // WTODO - handle case with , inside quotes
+	    /*
+	    console.log('189,"Jospeh W,",Battisto ,107,1,1,0,0,0,0,'.replace(/"([^"]|.)*"/g, function ($0) {
+	        return $0.replace(/,/g, "");
+	    }));
+	    */
+
+	    var dataValidation = {}; // WTODO: remove after validation is complete
 	    var headers = undefined;
 	    data.split('\n').forEach(function (row, index) {
+
+	      // filtering bad rows
+	      if (row.length === 0) {
+	        return;
+	      }
+
+	      var items = row.split(/,/);
+
+	      // header row
 	      if (index === 0) {
-	        headers = row.split(",");
+	        headers = items;
 	        return;
 	      }
 
 	      var electionResult = {};
 	      var winner = undefined;
 	      var gender = undefined;
-	      var items = row.split(",");
 	      items.forEach(function (item, itemIndex) {
 	        var headerName = headers[itemIndex];
 
@@ -130,11 +147,22 @@
 	        }
 	      }.bind(this));
 
+	      if (dataValidation[Object.keys(electionResult).length] === undefined) {
+	        dataValidation[Object.keys(electionResult).length] = 0;
+	      }
+
+	      ++dataValidation[Object.keys(electionResult).length];
+
+	      if (Object.keys(electionResult).length === 12) {
+	        //console.log(row);
+	      }
+
 	      this.state.electionResults.push(electionResult);
 	    }.bind(this));
 
 	    this.setState(this.state);
 	    console.log(this.state);
+	    console.log(dataValidation);
 	  },
 
 	  componentWillMount: function componentWillMount() {
@@ -33443,7 +33471,7 @@
 
 	  render: function render() {
 
-	    var dimensions = [{ value: 'Gender', title: 'Gender' }, { value: 'Office', title: 'Office' }, { value: 'Party', title: 'Party' }];
+	    var dimensions = [{ value: 'District', title: 'District' }, { value: 'First Name', title: 'First Name' }, { value: 'Last Name', title: 'Last Name' }, { value: 'Unique Candidate ID', title: 'Unique Candidate ID' }, { value: 'Office', title: 'Office' }, { value: 'Party', title: 'Party' }, { value: 'Gender', title: 'Gender' }, { value: 'Election', title: 'Election' }, { value: 'Year', title: 'Year' }, { value: 'Incumbent', title: 'Incumbent' }];
 
 	    var reduce = function reduce(row, memo) {
 	      memo.winsTotal = (memo.winsTotal || 0) + (row.Winner === "Yes" ? 1 : 0);
@@ -33462,7 +33490,7 @@
 	      dimensions: dimensions,
 	      reduce: reduce,
 	      calculations: calculations,
-	      activeDimensions: ['Gender']
+	      activeDimensions: ['Year', 'Gender']
 	    });
 	  }
 	});

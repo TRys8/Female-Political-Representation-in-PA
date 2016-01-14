@@ -50,17 +50,34 @@ var Main = React.createClass({
   },
 
   processElectionResultData: function(data) {
+
+    // WTODO - handle case with , inside quotes
+    /*
+    console.log('189,"Jospeh W,",Battisto ,107,1,1,0,0,0,0,'.replace(/"([^"]|.)*"/g, function ($0) {
+        return $0.replace(/,/g, "");
+    }));
+    */
+
+    let dataValidation = {}; // WTODO: remove after validation is complete
     let headers = undefined;
     data.split('\n').forEach(function(row, index) {
+
+      // filtering bad rows
+      if (row.length === 0) {
+        return;
+      }
+
+      let items = row.split(/,/);
+
+      // header row
       if (index === 0) {
-        headers = row.split(",");
+        headers = items;
         return;
       }
 
       let electionResult = {};
       let winner = undefined;
       let gender = undefined;
-      let items = row.split(",");
       items.forEach(function(item, itemIndex) {
         let headerName = headers[itemIndex];
 
@@ -86,12 +103,24 @@ var Main = React.createClass({
 
       }.bind(this));
 
+      if (dataValidation[Object.keys(electionResult).length] === undefined) {
+        dataValidation[Object.keys(electionResult).length] = 0;
+      }
+
+      ++dataValidation[Object.keys(electionResult).length];
+
+      if (Object.keys(electionResult).length === 12) {
+        //console.log(row);
+      }
+
       this.state.electionResults.push(electionResult);
     }.bind(this));
 
     this.setState(this.state);
     console.log(this.state);
+    console.log(dataValidation);
   },
+
 
   componentWillMount: function() {
     $.ajax({
