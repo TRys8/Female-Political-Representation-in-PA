@@ -51,6 +51,7 @@
 	var $ = __webpack_require__(159);
 
 	var Navbar = __webpack_require__(160);
+	var ResultLineChart = __webpack_require__(184);
 	var ResultBarChart = __webpack_require__(161);
 	var ResultTable = __webpack_require__(172);
 
@@ -171,88 +172,33 @@
 	            React.createElement(
 	              "h2",
 	              { className: "sub-header" },
-	              "Summary"
-	            ),
-	            React.createElement(
-	              "div",
-	              { className: "col-xs-6 col-sm-3 placeholder" },
-	              React.createElement("img", { src: "data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==", width: "200", height: "200", className: "img-responsive", alt: "Generic placeholder thumbnail" }),
-	              React.createElement(
-	                "h4",
-	                null,
-	                "Label"
-	              ),
-	              React.createElement(
-	                "span",
-	                { className: "text-muted" },
-	                "Something else"
-	              )
-	            ),
-	            React.createElement(
-	              "div",
-	              { className: "col-xs-6 col-sm-3 placeholder" },
-	              React.createElement("img", { src: "data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==", width: "200", height: "200", className: "img-responsive", alt: "Generic placeholder thumbnail" }),
-	              React.createElement(
-	                "h4",
-	                null,
-	                "Label"
-	              ),
-	              React.createElement(
-	                "span",
-	                { className: "text-muted" },
-	                "Something else"
-	              )
-	            ),
-	            React.createElement(
-	              "div",
-	              { className: "col-xs-6 col-sm-3 placeholder" },
-	              React.createElement("img", { src: "data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==", width: "200", height: "200", className: "img-responsive", alt: "Generic placeholder thumbnail" }),
-	              React.createElement(
-	                "h4",
-	                null,
-	                "Label"
-	              ),
-	              React.createElement(
-	                "span",
-	                { className: "text-muted" },
-	                "Something else"
-	              )
-	            ),
-	            React.createElement(
-	              "div",
-	              { className: "col-xs-6 col-sm-3 placeholder" },
-	              React.createElement("img", { src: "data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==", width: "200", height: "200", className: "img-responsive", alt: "Generic placeholder thumbnail" }),
-	              React.createElement(
-	                "h4",
-	                null,
-	                "Label"
-	              ),
-	              React.createElement(
-	                "span",
-	                { className: "text-muted" },
-	                "Something else"
-	              )
+	              "Winning Candidates by Gender"
 	            ),
 	            React.createElement(
 	              "div",
 	              { className: "col-xs-12" },
 	              React.createElement(
-	                "h3",
+	                "h2",
 	                { className: "sub-header" },
-	                "Winning Candidates by Gender"
+	                "Graphs"
 	              ),
+	              React.createElement(ResultLineChart, { electionResultsAggregate: this.state.electionResultsAggregate }),
 	              React.createElement(ResultBarChart, { electionResultsAggregate: this.state.electionResultsAggregate })
-	            )
-	          ),
-	          React.createElement(
-	            "div",
-	            { className: "col-xs-12" },
-	            React.createElement(
-	              "h2",
-	              { className: "sub-header" },
-	              "Details"
 	            ),
-	            React.createElement(ResultTable, { electionResults: this.state.electionResults })
+	            React.createElement(
+	              "div",
+	              { className: "col-xs-12 bottom-buffer" },
+	              React.createElement(
+	                "h2",
+	                { className: "sub-header" },
+	                "Pivot table"
+	              ),
+	              React.createElement(
+	                "div",
+	                { className: "col-xs-10 col-xs-offset-1" },
+	                React.createElement(ResultTable, { electionResults: this.state.electionResults })
+	              )
+	            )
 	          )
 	        )
 	      )
@@ -450,7 +396,9 @@
 	        currentQueue = queue;
 	        queue = [];
 	        while (++queueIndex < len) {
-	            currentQueue[queueIndex].run();
+	            if (currentQueue) {
+	                currentQueue[queueIndex].run();
+	            }
 	        }
 	        queueIndex = -1;
 	        len = queue.length;
@@ -502,7 +450,6 @@
 	    throw new Error('process.binding is not supported');
 	};
 
-	// TODO(shtylman)
 	process.cwd = function () { return '/' };
 	process.chdir = function (dir) {
 	    throw new Error('process.chdir is not supported');
@@ -47127,6 +47074,64 @@
 			URL.revokeObjectURL(oldSrc);
 	}
 
+
+/***/ },
+/* 184 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var React = __webpack_require__(1);
+	var LineChart = __webpack_require__(162).Line;
+
+	var ResultLineChart = React.createClass({
+	  displayName: "ResultLineChart",
+
+	  componentDidMount: function componentDidMount() {
+	    // WTODO: work needed in legend
+	    // console.log(this.refs["barChart"].generateLegend());
+	  },
+
+	  render: function render() {
+
+	    var maleWins = [];
+	    var femaleWins = [];
+	    var labels = Object.keys(this.props.electionResultsAggregate.yearly);
+
+	    labels.forEach(function (key) {
+	      var year = this.props.electionResultsAggregate.yearly[key];
+	      maleWins.push(year["Man"]);
+	      femaleWins.push(year["Woman"]);
+	    }.bind(this));
+
+	    var data = {
+	      labels: labels,
+	      datasets: [{
+	        label: "Male",
+	        fillColor: "rgba(220,220,220,0.2)",
+	        strokeColor: "rgba(220,220,220,1)",
+	        pointColor: "rgba(220,220,220,1)",
+	        pointStrokeColor: "#fff",
+	        pointHighlightFill: "#fff",
+	        pointHighlightStroke: "rgba(220,220,220,1)",
+	        data: maleWins
+	      }, {
+	        label: "Female",
+	        fillColor: "rgba(151,187,205,0.2)",
+	        strokeColor: "rgba(151,187,205,1)",
+	        pointColor: "rgba(151,187,205,1)",
+	        pointStrokeColor: "#fff",
+	        pointHighlightFill: "#fff",
+	        pointHighlightStroke: "rgba(151,187,205,1)",
+	        data: femaleWins
+	      }]
+	    };
+
+	    return React.createElement(LineChart, { data: data, className: "col-xs-10 col-xs-offset-1" });
+	  }
+	});
+
+	module.exports = ResultLineChart;
 
 /***/ }
 /******/ ]);

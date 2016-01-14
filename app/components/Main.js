@@ -3,6 +3,7 @@ var ReactDOM = require("react-dom");
 var $ = require("jquery");
 
 var Navbar = require("./Navbar");
+var ResultLineChart = require("./ResultLineChart");
 var ResultBarChart = require("./ResultBarChart");
 var ResultTable = require("./ResultTable");
 
@@ -112,40 +113,21 @@ var Main = React.createClass({
             <div className="col-xs-12">
               <h1 className="page-header">Historial Election Results</h1>
             </div>
-
             <div className="col-xs-12">
-              <h2 className="sub-header">Summary</h2>
-
-              <div className="col-xs-6 col-sm-3 placeholder">
-                <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" className="img-responsive" alt="Generic placeholder thumbnail" />
-                <h4>Label</h4>
-                <span className="text-muted">Something else</span>
-              </div>
-              <div className="col-xs-6 col-sm-3 placeholder">
-                <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" className="img-responsive" alt="Generic placeholder thumbnail" />
-                <h4>Label</h4>
-                <span className="text-muted">Something else</span>
-              </div>
-              <div className="col-xs-6 col-sm-3 placeholder">
-                <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" className="img-responsive" alt="Generic placeholder thumbnail" />
-                <h4>Label</h4>
-                <span className="text-muted">Something else</span>
-              </div>
-              <div className="col-xs-6 col-sm-3 placeholder">
-                <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" className="img-responsive" alt="Generic placeholder thumbnail" />
-                <h4>Label</h4>
-                <span className="text-muted">Something else</span>
-              </div>
+              <h2 className="sub-header">Winning Candidates by Gender</h2>
 
               <div className="col-xs-12">
-                <h3 className="sub-header">Winning Candidates by Gender</h3>
+                <h2 className="sub-header">Graphs</h2>
+                <ResultLineChart electionResultsAggregate={this.state.electionResultsAggregate}/>
                 <ResultBarChart electionResultsAggregate={this.state.electionResultsAggregate}/>
               </div>
-            </div>
 
-            <div className="col-xs-12">
-              <h2 className="sub-header">Details</h2>
-              <ResultTable electionResults={this.state.electionResults} />
+              <div className="col-xs-12 bottom-buffer">
+                <h2 className="sub-header">Pivot table</h2>
+                <div className="col-xs-10 col-xs-offset-1">
+                  <ResultTable electionResults={this.state.electionResults} />
+                </div>
+              </div>
             </div>
           </div>
         </div>
