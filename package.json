@@ -1,0 +1,45 @@
+{
+  "name": "penn-policital",
+  "version": "1.0.0",
+  "description": "Political statistics for Pennsylvania",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wmf23/Female-Political-Representation-in-PA.git"
+  },
+  "keywords": [
+    "political",
+    "female",
+    "representation",
+    "male",
+    "pennsylvania",
+    "penn",
+    "philadelphia",
+    "politics"
+  ],
+  "author": "Waqqas Farooq",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wmf23/Female-Political-Representation-in-PA/issues"
+  },
+  "homepage": "https://github.com/wmf23/Female-Political-Representation-in-PA#readme",
+  "dependencies": {
+    "chart.js": "^1.0.2",
+    "jquery": "^2.2.0",
+    "react": "^0.14.3",
+    "react-chartjs": "^0.6.0",
+    "react-dom": "^0.14.3",
+    "react-pivot": "^1.13.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.4.0",
+    "babel-loader": "^6.2.1",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-react": "^6.3.13",
+    "css-loader": "^0.23.1",
+    "style-loader": "^0.13.0"
+  }
+}
