@@ -14,7 +14,8 @@ var Main = React.createClass({
       lookup: {},
       electionResults: [],
       electionResultsAggregate: {
-        yearly: {}
+        yearly: {},
+        district: {}
       }
     };
   },
@@ -51,13 +52,6 @@ var Main = React.createClass({
 
   processElectionResultData: function(data) {
 
-    // WTODO - handle case with , inside quotes
-    /*
-    console.log('189,"Jospeh W,",Battisto ,107,1,1,0,0,0,0,'.replace(/"([^"]|.)*"/g, function ($0) {
-        return $0.replace(/,/g, "");
-    }));
-    */
-
     let dataValidation = {}; // WTODO: remove after validation is complete
     let headers = undefined;
     data.split('\n').forEach(function(row, index) {
@@ -67,7 +61,7 @@ var Main = React.createClass({
         return;
       }
 
-      let items = row.split(/,/);
+      let items = row.split(/,(?!\s)/);
 
       // header row
       if (index === 0) {
@@ -78,6 +72,7 @@ var Main = React.createClass({
       let electionResult = {};
       let winner = undefined;
       let gender = undefined;
+      let district = undefined;
       items.forEach(function(item, itemIndex) {
         let headerName = headers[itemIndex];
 
@@ -87,10 +82,30 @@ var Main = React.createClass({
           let year = electionResult[headerName];
 
           if (winner) {
+
+            // aggregation for wins based on year -> gender
             ++this.state.electionResultsAggregate.yearly[year][gender];
+
+            // aggregation for wins based on year -> district -> gender
+            if (this.state.electionResultsAggregate.yearly[year][district] === undefined) {
+              this.state.electionResultsAggregate.yearly[year][district] = {
+                Man: 0,
+                Woman: 0
+              };
+            }
+            ++this.state.electionResultsAggregate.yearly[year][district][gender];
+
+            // aggregation for wins based on district -> gender
+            if (this.state.electionResultsAggregate.district[district] === undefined) {
+              this.state.electionResultsAggregate.district[district] = {
+                Man: 0,
+                Woman: 0
+              };
+            }
+            ++this.state.electionResultsAggregate.district[district][gender];
           }
 
-          winner = gender = undefined;
+          winner = gender = district = undefined;
         }
 
         else if (headerName === "Gender") {
@@ -101,7 +116,14 @@ var Main = React.createClass({
           winner = (electionResult[headerName] === "Yes");
         }
 
+        else if (headerName === "District") {
+          district = electionResult[headerName];
+        }
+
       }.bind(this));
+
+      // setting global reference
+      g_electionResultsAggregate = this.state.electionResultsAggregate;
 
       if (dataValidation[Object.keys(electionResult).length] === undefined) {
         dataValidation[Object.keys(electionResult).length] = 0;
@@ -110,7 +132,7 @@ var Main = React.createClass({
       ++dataValidation[Object.keys(electionResult).length];
 
       if (Object.keys(electionResult).length === 12) {
-        //console.log(row);
+        console.log(row);
       }
 
       this.state.electionResults.push(electionResult);
@@ -146,9 +168,16 @@ var Main = React.createClass({
               <h2 className="sub-header">Winning Candidates by Gender</h2>
 
               <div className="col-xs-12">
+                <h2 className="sub-header">Heatmap showing women wins</h2>
+                <div id="heatmap" className="col-xs-10 col-xs-offset-1 map">
+                  <h3 className="map-preloading">Loading heatmap of women winning candidates by district...</h3>
+                </div>
+              </div>
+
+              <div className="col-xs-12">
                 <h2 className="sub-header">Graphs</h2>
                 <ResultLineChart electionResultsAggregate={this.state.electionResultsAggregate}/>
-                <ResultBarChart electionResultsAggregate={this.state.electionResultsAggregate}/>
+                { false && <ResultBarChart electionResultsAggregate={this.state.electionResultsAggregate}/> }
               </div>
 
               <div className="col-xs-12 bottom-buffer">

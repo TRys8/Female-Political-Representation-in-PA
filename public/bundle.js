@@ -51,9 +51,9 @@
 	var $ = __webpack_require__(159);
 
 	var Navbar = __webpack_require__(160);
-	var ResultLineChart = __webpack_require__(184);
-	var ResultBarChart = __webpack_require__(161);
-	var ResultTable = __webpack_require__(172);
+	var ResultLineChart = __webpack_require__(161);
+	var ResultBarChart = __webpack_require__(172);
+	var ResultTable = __webpack_require__(173);
 
 	var Main = React.createClass({
 	  displayName: "Main",
@@ -63,7 +63,8 @@
 	      lookup: {},
 	      electionResults: [],
 	      electionResultsAggregate: {
-	        yearly: {}
+	        yearly: {},
+	        district: {}
 	      }
 	    };
 	  },
@@ -100,13 +101,6 @@
 
 	  processElectionResultData: function processElectionResultData(data) {
 
-	    // WTODO - handle case with , inside quotes
-	    /*
-	    console.log('189,"Jospeh W,",Battisto ,107,1,1,0,0,0,0,'.replace(/"([^"]|.)*"/g, function ($0) {
-	        return $0.replace(/,/g, "");
-	    }));
-	    */
-
 	    var dataValidation = {}; // WTODO: remove after validation is complete
 	    var headers = undefined;
 	    data.split('\n').forEach(function (row, index) {
@@ -116,7 +110,7 @@
 	        return;
 	      }
 
-	      var items = row.split(/,/);
+	      var items = row.split(/,(?!\s)/);
 
 	      // header row
 	      if (index === 0) {
@@ -127,6 +121,7 @@
 	      var electionResult = {};
 	      var winner = undefined;
 	      var gender = undefined;
+	      var district = undefined;
 	      items.forEach(function (item, itemIndex) {
 	        var headerName = headers[itemIndex];
 
@@ -136,16 +131,41 @@
 	          var year = electionResult[headerName];
 
 	          if (winner) {
+
+	            // aggregation for wins based on year -> gender
 	            ++this.state.electionResultsAggregate.yearly[year][gender];
+
+	            // aggregation for wins based on year -> district -> gender
+	            if (this.state.electionResultsAggregate.yearly[year][district] === undefined) {
+	              this.state.electionResultsAggregate.yearly[year][district] = {
+	                Man: 0,
+	                Woman: 0
+	              };
+	            }
+	            ++this.state.electionResultsAggregate.yearly[year][district][gender];
+
+	            // aggregation for wins based on district -> gender
+	            if (this.state.electionResultsAggregate.district[district] === undefined) {
+	              this.state.electionResultsAggregate.district[district] = {
+	                Man: 0,
+	                Woman: 0
+	              };
+	            }
+	            ++this.state.electionResultsAggregate.district[district][gender];
 	          }
 
-	          winner = gender = undefined;
+	          winner = gender = district = undefined;
 	        } else if (headerName === "Gender") {
 	          gender = electionResult[headerName];
 	        } else if (headerName === "Winner") {
 	          winner = electionResult[headerName] === "Yes";
+	        } else if (headerName === "District") {
+	          district = electionResult[headerName];
 	        }
 	      }.bind(this));
+
+	      // setting global reference
+	      g_electionResultsAggregate = this.state.electionResultsAggregate;
 
 	      if (dataValidation[Object.keys(electionResult).length] === undefined) {
 	        dataValidation[Object.keys(electionResult).length] = 0;
@@ -154,7 +174,7 @@
 	      ++dataValidation[Object.keys(electionResult).length];
 
 	      if (Object.keys(electionResult).length === 12) {
-	        //console.log(row);
+	        console.log(row);
 	      }
 
 	      this.state.electionResults.push(electionResult);
@@ -208,10 +228,28 @@
 	              React.createElement(
 	                "h2",
 	                { className: "sub-header" },
+	                "Heatmap showing women wins"
+	              ),
+	              React.createElement(
+	                "div",
+	                { id: "heatmap", className: "col-xs-10 col-xs-offset-1 map" },
+	                React.createElement(
+	                  "h3",
+	                  { className: "map-preloading" },
+	                  "Loading heatmap of women winning candidates by district..."
+	                )
+	              )
+	            ),
+	            React.createElement(
+	              "div",
+	              { className: "col-xs-12" },
+	              React.createElement(
+	                "h2",
+	                { className: "sub-header" },
 	                "Graphs"
 	              ),
 	              React.createElement(ResultLineChart, { electionResultsAggregate: this.state.electionResultsAggregate }),
-	              React.createElement(ResultBarChart, { electionResultsAggregate: this.state.electionResultsAggregate })
+	              false && React.createElement(ResultBarChart, { electionResultsAggregate: this.state.electionResultsAggregate })
 	            ),
 	            React.createElement(
 	              "div",
@@ -424,9 +462,7 @@
 	        currentQueue = queue;
 	        queue = [];
 	        while (++queueIndex < len) {
-	            if (currentQueue) {
-	                currentQueue[queueIndex].run();
-	            }
+	            currentQueue[queueIndex].run();
 	        }
 	        queueIndex = -1;
 	        len = queue.length;
@@ -478,6 +514,7 @@
 	    throw new Error('process.binding is not supported');
 	};
 
+	// TODO(shtylman)
 	process.cwd = function () { return '/' };
 	process.chdir = function (dir) {
 	    throw new Error('process.chdir is not supported');
@@ -29736,10 +29773,10 @@
 	"use strict";
 
 	var React = __webpack_require__(1);
-	var BarChart = __webpack_require__(162).Bar;
+	var LineChart = __webpack_require__(162).Line;
 
-	var ResultBarChart = React.createClass({
-	  displayName: "ResultBarChart",
+	var ResultLineChart = React.createClass({
+	  displayName: "ResultLineChart",
 
 	  componentDidMount: function componentDidMount() {
 	    // WTODO: work needed in legend
@@ -29762,31 +29799,30 @@
 	      labels: labels,
 	      datasets: [{
 	        label: "Male",
-	        fillColor: "rgba(220,220,220,0.5)",
-	        strokeColor: "rgba(220,220,220,0.8)",
-	        highlightFill: "rgba(220,220,220,0.75)",
-	        highlightStroke: "rgba(220,220,220,1)",
+	        fillColor: "rgba(220,220,220,0.2)",
+	        strokeColor: "rgba(220,220,220,1)",
+	        pointColor: "rgba(220,220,220,1)",
+	        pointStrokeColor: "#fff",
+	        pointHighlightFill: "#fff",
+	        pointHighlightStroke: "rgba(220,220,220,1)",
 	        data: maleWins
 	      }, {
 	        label: "Female",
-	        fillColor: "rgba(151,187,205,0.5)",
-	        strokeColor: "rgba(151,187,205,0.8)",
-	        highlightFill: "rgba(151,187,205,0.75)",
-	        highlightStroke: "rgba(151,187,205,1)",
+	        fillColor: "rgba(151,187,205,0.2)",
+	        strokeColor: "rgba(151,187,205,1)",
+	        pointColor: "rgba(151,187,205,1)",
+	        pointStrokeColor: "#fff",
+	        pointHighlightFill: "#fff",
+	        pointHighlightStroke: "rgba(151,187,205,1)",
 	        data: femaleWins
 	      }]
 	    };
 
-	    // WTODO: not needed
-	    var chartOptions = {
-	      legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].fillColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
-	    };
-
-	    return React.createElement(BarChart, { ref: "barChart", className: "col-xs-10 col-xs-offset-1", data: data });
+	    return React.createElement(LineChart, { data: data, className: "col-xs-10 col-xs-offset-1" });
 	  }
 	});
 
-	module.exports = ResultBarChart;
+	module.exports = ResultLineChart;
 
 /***/ },
 /* 162 */
@@ -33464,7 +33500,66 @@
 	"use strict";
 
 	var React = __webpack_require__(1);
-	var ReactPivot = __webpack_require__(173);
+	var BarChart = __webpack_require__(162).Bar;
+
+	var ResultBarChart = React.createClass({
+	  displayName: "ResultBarChart",
+
+	  componentDidMount: function componentDidMount() {
+	    // WTODO: work needed in legend
+	    // console.log(this.refs["barChart"].generateLegend());
+	  },
+
+	  render: function render() {
+
+	    var maleWins = [];
+	    var femaleWins = [];
+	    var labels = Object.keys(this.props.electionResultsAggregate.yearly);
+
+	    labels.forEach(function (key) {
+	      var year = this.props.electionResultsAggregate.yearly[key];
+	      maleWins.push(year["Man"]);
+	      femaleWins.push(year["Woman"]);
+	    }.bind(this));
+
+	    var data = {
+	      labels: labels,
+	      datasets: [{
+	        label: "Male",
+	        fillColor: "rgba(220,220,220,0.5)",
+	        strokeColor: "rgba(220,220,220,0.8)",
+	        highlightFill: "rgba(220,220,220,0.75)",
+	        highlightStroke: "rgba(220,220,220,1)",
+	        data: maleWins
+	      }, {
+	        label: "Female",
+	        fillColor: "rgba(151,187,205,0.5)",
+	        strokeColor: "rgba(151,187,205,0.8)",
+	        highlightFill: "rgba(151,187,205,0.75)",
+	        highlightStroke: "rgba(151,187,205,1)",
+	        data: femaleWins
+	      }]
+	    };
+
+	    // WTODO: not needed
+	    var chartOptions = {
+	      legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].fillColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+	    };
+
+	    return React.createElement(BarChart, { ref: "barChart", className: "col-xs-10 col-xs-offset-1", data: data });
+	  }
+	});
+
+	module.exports = ResultBarChart;
+
+/***/ },
+/* 173 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var React = __webpack_require__(1);
+	var ReactPivot = __webpack_require__(174);
 
 	var ResultTable = React.createClass({
 	  displayName: "ResultTable",
@@ -33498,18 +33593,18 @@
 	module.exports = ResultTable;
 
 /***/ },
-/* 173 */
+/* 174 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(174);
+	var _ = __webpack_require__(175);
 	var React = __webpack_require__(1);
-	var DataFrame = __webpack_require__(176);
-	var Emitter = __webpack_require__(177);
+	var DataFrame = __webpack_require__(177);
+	var Emitter = __webpack_require__(178);
 
-	var partial = __webpack_require__(178);
-	var download = __webpack_require__(179);
+	var partial = __webpack_require__(179);
+	var download = __webpack_require__(180);
 
 	module.exports = React.createClass({
 	  cache: {},
@@ -33992,11 +34087,11 @@
 	}
 
 	function loadStyles() {
-	  __webpack_require__(180);
+	  __webpack_require__(181);
 	}
 
 /***/ },
-/* 174 */
+/* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module, global) {/**
@@ -46351,10 +46446,10 @@
 	  }
 	}.call(this));
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(175)(module), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(176)(module), (function() { return this; }())))
 
 /***/ },
-/* 175 */
+/* 176 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -46370,10 +46465,10 @@
 
 
 /***/ },
-/* 176 */
+/* 177 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(174)
+	var _ = __webpack_require__(175)
 
 	module.exports = function(opts) {return new DataFrame(opts)}
 
@@ -46559,7 +46654,7 @@
 
 
 /***/ },
-/* 177 */
+/* 178 */
 /***/ function(module, exports) {
 
 	/*
@@ -46718,7 +46813,7 @@
 
 
 /***/ },
-/* 178 */
+/* 179 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -46733,7 +46828,7 @@
 	};
 
 /***/ },
-/* 179 */
+/* 180 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -46754,16 +46849,16 @@
 	};
 
 /***/ },
-/* 180 */
+/* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(181);
+	var content = __webpack_require__(182);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(183)(content, {});
+	var update = __webpack_require__(184)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -46780,10 +46875,10 @@
 	}
 
 /***/ },
-/* 181 */
+/* 182 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(182)();
+	exports = module.exports = __webpack_require__(183)();
 	// imports
 
 
@@ -46794,7 +46889,7 @@
 
 
 /***/ },
-/* 182 */
+/* 183 */
 /***/ function(module, exports) {
 
 	/*
@@ -46850,7 +46945,7 @@
 
 
 /***/ },
-/* 183 */
+/* 184 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -47102,64 +47197,6 @@
 			URL.revokeObjectURL(oldSrc);
 	}
 
-
-/***/ },
-/* 184 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	var React = __webpack_require__(1);
-	var LineChart = __webpack_require__(162).Line;
-
-	var ResultLineChart = React.createClass({
-	  displayName: "ResultLineChart",
-
-	  componentDidMount: function componentDidMount() {
-	    // WTODO: work needed in legend
-	    // console.log(this.refs["barChart"].generateLegend());
-	  },
-
-	  render: function render() {
-
-	    var maleWins = [];
-	    var femaleWins = [];
-	    var labels = Object.keys(this.props.electionResultsAggregate.yearly);
-
-	    labels.forEach(function (key) {
-	      var year = this.props.electionResultsAggregate.yearly[key];
-	      maleWins.push(year["Man"]);
-	      femaleWins.push(year["Woman"]);
-	    }.bind(this));
-
-	    var data = {
-	      labels: labels,
-	      datasets: [{
-	        label: "Male",
-	        fillColor: "rgba(220,220,220,0.2)",
-	        strokeColor: "rgba(220,220,220,1)",
-	        pointColor: "rgba(220,220,220,1)",
-	        pointStrokeColor: "#fff",
-	        pointHighlightFill: "#fff",
-	        pointHighlightStroke: "rgba(220,220,220,1)",
-	        data: maleWins
-	      }, {
-	        label: "Female",
-	        fillColor: "rgba(151,187,205,0.2)",
-	        strokeColor: "rgba(151,187,205,1)",
-	        pointColor: "rgba(151,187,205,1)",
-	        pointStrokeColor: "#fff",
-	        pointHighlightFill: "#fff",
-	        pointHighlightStroke: "rgba(151,187,205,1)",
-	        data: femaleWins
-	      }]
-	    };
-
-	    return React.createElement(LineChart, { data: data, className: "col-xs-10 col-xs-offset-1" });
-	  }
-	});
-
-	module.exports = ResultLineChart;
 
 /***/ }
 /******/ ]);
