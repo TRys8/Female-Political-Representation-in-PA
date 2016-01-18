@@ -85,7 +85,7 @@ function loadDistrictsFromJSON() {
     complete: function(jqXHR, textStatus) {
       var status = $("#status").text();
       status += " My work here is done: " + textStatus;
-      $("#status").text(status);
+      //$("#status").text(status);
     }
   });
 }
@@ -133,7 +133,7 @@ function loadDistrictsFromKML() {
     complete: function(jqXHR, textStatus) {
       var status = $("#status").text();
       status += " My work here is done: " + textStatus;
-      $("#status").text(status);
+      // $("#status").text(status);
     }
   });
 }
