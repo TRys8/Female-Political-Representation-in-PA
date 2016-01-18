@@ -222,11 +222,7 @@
 	              { className: "sub-header" },
 	              "Winning Candidates by Gender"
 	            ),
-	            React.createElement(
-	              "div",
-	              { id: "status", className: "col-xs-12" },
-	              "Retry: 0"
-	            ),
+	            React.createElement("div", { id: "status", className: "col-xs-12" }),
 	            React.createElement(
 	              "div",
 	              { className: "col-xs-12" },

@@ -168,7 +168,6 @@ var Main = React.createClass({
               <h2 className="sub-header">Winning Candidates by Gender</h2>
 
               <div id="status" className="col-xs-12">
-                Retry: 0
               </div>
 
               <div className="col-xs-12">
