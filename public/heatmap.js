@@ -4,7 +4,7 @@ window.onload = function() {
   var retryCount = 0;
   var preloadChecker = setInterval(function() {
 
-    $("#status").text("Retry: " + ++retryCount);
+    $("#status").text("Retry: " + (++retryCount) + ", election-results: " + (g_electionResultsAggregate !== undefined) + ", district-map: " +  (g_districtCenters !== undefined));
     if (g_electionResultsAggregate !== undefined &&
         g_districtCenters !== undefined) {
 
@@ -12,7 +12,7 @@ window.onload = function() {
       initMap();
 
     }
-  }, 30);
+  }, 100);
 };
 
 var map;
