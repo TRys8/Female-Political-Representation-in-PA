@@ -1,7 +1,10 @@
 
 window.onload = function() {
+
+  var retryCount = 0;
   var preloadChecker = setInterval(function() {
 
+    $("#status").text("Retry: " + ++retryCount);
     if (g_electionResultsAggregate !== undefined &&
         g_districtCenters !== undefined) {
 
@@ -9,7 +12,7 @@ window.onload = function() {
       initMap();
 
     }
-  }, 1000);
+  }, 30);
 };
 
 var map;

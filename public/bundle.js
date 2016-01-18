@@ -224,6 +224,11 @@
 	            ),
 	            React.createElement(
 	              "div",
+	              { id: "status", className: "col-xs-12" },
+	              "Retry: 0"
+	            ),
+	            React.createElement(
+	              "div",
 	              { className: "col-xs-12" },
 	              React.createElement(
 	                "h2",
@@ -234,7 +239,7 @@
 	                "div",
 	                { id: "heatmap", className: "col-xs-10 col-xs-offset-1 map" },
 	                React.createElement(
-	                  "h3",
+	                  "h5",
 	                  { className: "map-preloading" },
 	                  "Loading heatmap of women winning candidates by district..."
 	                )

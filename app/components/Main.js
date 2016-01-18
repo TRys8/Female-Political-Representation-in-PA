@@ -167,10 +167,14 @@ var Main = React.createClass({
             <div className="col-xs-12">
               <h2 className="sub-header">Winning Candidates by Gender</h2>
 
+              <div id="status" className="col-xs-12">
+                Retry: 0
+              </div>
+
               <div className="col-xs-12">
                 <h2 className="sub-header">Heatmap showing women wins</h2>
                 <div id="heatmap" className="col-xs-10 col-xs-offset-1 map">
-                  <h3 className="map-preloading">Loading heatmap of women winning candidates by district...</h3>
+                  <h5 className="map-preloading">Loading heatmap of women winning candidates by district...</h5>
                 </div>
               </div>
 
@@ -186,6 +190,7 @@ var Main = React.createClass({
                   <ResultTable electionResults={this.state.electionResults} />
                 </div>
               </div>
+
             </div>
           </div>
         </div>
