@@ -1,6 +1,5 @@
 var React = require("react");
 var ReactDOM = require("react-dom");
-var $ = require("jquery");
 
 var Navbar = require("./Navbar");
 var ResultLineChart = require("./ResultLineChart");
@@ -145,6 +144,7 @@ var Main = React.createClass({
 
 
   componentWillMount: function() {
+
     $.ajax({
       url: "election-result-key.csv",
       async: false,

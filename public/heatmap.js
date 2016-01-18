@@ -1,58 +1,29 @@
-window.onload = function() {
-  initMap();
-};
 
+window.onload = function() {
+  var preloadChecker = setInterval(function() {
+
+    if (g_electionResultsAggregate !== undefined &&
+        g_districtCenters !== undefined) {
+
+      clearInterval(preloadChecker);
+      initMap();
+
+    }
+  }, 1000);
+};
 
 var map;
 var heatmapLayer;
-// var districtLayer;
-var districtCenters = {};
-
 
 function initMap() {
 
-  $.ajax({
-    type: "GET",
-    url: "2011-Revised-Final-Plan-House.kml",
-    dataType: "xml",
-    async: false,
-    success: function(xml) {
-
-      $(xml).find('Placemark').each(function() {
-
-        var districtNumber = parseInt($(this).children("name").text().split(/\s/)[1]);
-
-        var bounds = new google.maps.LatLngBounds();
-
-        $(this).find("coordinates").text().split(/\s/).forEach(function(line, index) {
-          if (line.length === 0) {
-            return;
-          }
-
-          var items = line.split(/,/);
-
-          /*if (index === 0) {
-            console.log(districtNumber, items);
-          }*/
-
-          var lng = parseFloat(items[0]);
-          var lat = parseFloat(items[1]);
-
-          bounds.extend(new google.maps.LatLng(lat, lng));
-        });
-
-        districtCenters[districtNumber] = bounds.getCenter();
-      });
-    }
-  });
-
-  // console.log(districtCenters, g_electionResultsAggregate);
+  // console.log(g_districtCenters, g_electionResultsAggregate);
 
   var heatmapPoints = [];
 
   Object.keys(g_electionResultsAggregate.district).forEach(function(key, index) {
     var womenWins = parseInt(g_electionResultsAggregate.district[key]["Woman"]);
-    var latLng = districtCenters[key];
+    var latLng = g_districtCenters[key];
 
     for (var ii = 0; ii < womenWins; ++ii) {
       var randomOffset = Math.random()/10000 * Math.pow(-1, Math.random() >= .5 ? 0 : 1);
