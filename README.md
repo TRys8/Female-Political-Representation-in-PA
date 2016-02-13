@@ -13,3 +13,5 @@
 1. Ayushman Khazanchi
 2. Candace Worthen
 3. Matthew Farley
+4. Tom Ryan
+5. Waqqas Farooq
