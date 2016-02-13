@@ -11,6 +11,13 @@ body {
   margin-bottom: 10px;
 }
 
+.map {
+  height: 400px;
+}
+
+.map-preloading {
+  line-height: 400px;
+}
 
 .reactPivot {
   margin-top: 10px;
