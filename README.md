@@ -8,3 +8,6 @@
 2. Pivot table css for dropdowns
 3. Legend for bar chart
 4. Legend for line chart
+
+## Contributors
+1. Ayushman Khazanchi
