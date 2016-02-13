@@ -5,7 +5,7 @@
 
 ## Overview
 
-Some women from Rittenhouse Political stopped by Code for Philly in September 2015 to ask for help with a data set in CSV. Their goal is to outline the difference between male and female political representation in Pennsylvania based on election results between 200-2014.  They would like to visually display the data in tables, graphs, and ultimately a "heat map" to show how women have been represented in PA during those years. We are working in JavaScript to display this data in a palatable manner for end users.
+Rittenhouse Political stopped by Code for Philly in September 2015 to ask for help with a data set in CSV. Their goal is to outline the difference between male and female political representation in Pennsylvania based on election results between 200-2014.  They would like to visually display the data in tables, graphs, and ultimately a "heat map" to show how women have been represented in PA during those years. We are working in JavaScript to display this data in a palatable manner for end users.
 
 There are two separate maps to display for the heat map.  One shows the House of Representatives district lines, while the other shows the Senate District lines.  See the links for the map outlines:
 
